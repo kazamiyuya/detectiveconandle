@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Guess The Conan Character Silhouette - Detective Conan</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #282f7e, #0f132e);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #ff0000;
+    }
+
+    #timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #ffcc00;
+    }
+    img.character-img {
+width: 80px;
+height: auto;
+border-radius: 6px;
+}
+#backLink {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  background-color: #0066cc;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0, 102, 204, 0.6);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#backLink:hover {
+  background-color: #0051a3;
+  transform: scale(1.05);
+}
+    #answerSection {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #answerImage {
+      width: 250px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffcc;
+      margin-top: 10px;
+    }
+#correctMessage {
+  font-size: 26px;
+  font-weight: bold;
+  color: #00ffcc;
+  margin-bottom: 10px;
+}
+
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 220px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 16px;
+      background-color: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #result {
+      font-size: 22px;
+      margin-top: 20px;
+    }
+    .suggestion-list {
+  background-color: #636363;
+  border: 1px solid #000000;
+  max-height: 200px;
+  overflow-y: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  text-align: left;
+  z-index: 1;
+  border-radius: 6px;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #444;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.suggestion-item img {
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.suggestion-item:hover {
+  background-color: #444;
+}
+  </style>
+</head>
+<body>
+
+    
+<img src="https://preview.redd.it/4jocosl815p61.jpg?auto=webp&s=b8d20ca51bb736db30522c697eb2227ffeca67b1"
+ alt="Detective Conan Characters"
+ style="width: 90%; max-width: 800px; border-radius: 12px; margin-bottom: 20px;">
+   <div style="text-align: center;">
+  <a href="index.html" id="backLink">🔙 Back to Character Game</a>
+</div>
+  <h1>🔍 Guess The Detective Conan Character Silhouette</h1>
+  <div id="timer">🕒 Next character in: ...</div>
+
+ <div id="answerSection">
+  <p id="correctMessage">✅ Correct! It’s <span id="answerName"></span></p>
+</div>
+
+  <img id="silhouetteImage" class="silhouette" src="" alt="Silhouette" style="width: 250px; margin-top: 20px;">
+
+  <div>
+    <div style="position: relative;">
+  <input id="guessInput" placeholder="Type character name..." oninput="showSuggestions()" autocomplete="off">
+  <div id="suggestions" class="suggestion-list" style="display: none;"></div>
+</div>
+    <button onclick="submitGuess()">Guess</button>
+  </div>
+
+  <div id="result"></div>
+  
+  <script>
+  const characters = [
+    {
+    name: "Kudo Yusaku",
+    silhouette: "https://i.pinimg.com/736x/be/29/1c/be291cf974d2b65f5d2256e1034dd804.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/d4/Yusaku_Kudo_Profile.png/413px-Yusaku_Kudo_Profile.png"
+  },
+  {
+    name: "Kir",
+    silhouette: "https://i.pinimg.com/736x/4b/e8/43/4be843f651502c3a2290492242b86d10.jpg",
+    image: "https://i.pinimg.com/736x/15/65/9f/15659f3d93be9d91e3a11cc0af9e0656.jpg"
+  },
+  {
+    name: "Vodka",
+    silhouette: "https://i.pinimg.com/736x/e2/a4/38/e2a438bad4295a2902430eafa0ddf995.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/22/Vodka_Profile.jpg/275px-Vodka_Profile.jpg"
+  },
+  {
+    name: "Wakasa Rumi",
+    silhouette: "https://i.pinimg.com/736x/2a/d8/7c/2ad87c5b4b382cb03461ffa935813761.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/a/ad/Rumi_Wakasa_Profile.png/413px-Rumi_Wakasa_Profile.png"
+  },
+  {
+    name: "Haneda Shukichi",
+    silhouette: "https://i.pinimg.com/736x/a2/a6/a1/a2a6a1c8982e2047b6c46f6f3b9a273b.jpg",
+    image: "https://i.namu.wiki/i/dtbvYg879d_8HjSTjX7uN2mGbHkXb4wmfw_jfnb07lRRDoHxdzu8yTeNAqAre9fMbRf2KOzmmEfkEqFMDVWdhQ.webp"
+  },
+  {
+    name: "Edogawa Conan",
+    silhouette: "https://i.pinimg.com/736x/a2/9c/ab/a29cab332bf8a8c59a0f964f5293d5dc.jpg",
+    image: "https://animetv-jp.net/wp-content/uploads/2024/11/GcYI97HbMAAyjfw-696x482.jpeg"
+  },
+   {
+    name: "Sato Miwako",
+    silhouette: "https://i.pinimg.com/736x/15/c9/e5/15c9e53f2fc75921bf80fa266495dcfb.jpg",
+    image: "https://i.pinimg.com/736x/5e/b6/f3/5eb6f31e05c61a3b702ccc0f20c15b1c.jpg"
+  },
+     {
+    name: "Kurada Hyoue",
+    silhouette: "https://i.pinimg.com/736x/df/72/61/df7261571489e9415d86ec461957631c.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/91/Hyoue_Kuroda_Profile.png/413px-Hyoue_Kuroda_Profile.png"
+  },
+   {
+    name: "Kazami Yuuya",
+    silhouette: "https://i.pinimg.com/736x/64/b0/bc/64b0bc2517d7338ba285b49d5ded2233.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/90/Yuya_Kazami_Profile2.png/413px-Yuya_Kazami_Profile2.png"
+  },
+   {
+    name: "Mouri Kogoro",
+    silhouette: "https://i.pinimg.com/736x/b1/37/a6/b137a6c58fa3b06a328ba671fcacc7de.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/21/Kogoro_EP1100.jpg/413px-Kogoro_EP1100.jpg"
+  },
+   {
+    name: "Kisaki Eri",
+    silhouette: "https://i.pinimg.com/736x/0a/b2/e6/0ab2e6e80fd1a46c461a9ad78f283584.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f3/Eri_Kisaki_Profile.png/413px-Eri_Kisaki_Profile.png"
+  },
+   {
+    name: "Kudo Yukiko",
+    silhouette: "https://i.pinimg.com/736x/62/b2/17/62b2177dd822145e15392d933122204a.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f9/Yukiko_Kudo_Profile.png/413px-Yukiko_Kudo_Profile.png"
+  },
+    {
+    name: "Toyama Ginshiro",
+    silhouette: "https://i.pinimg.com/736x/30/75/47/30754720bb6a98713f13ee0ae17f7a96.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/da/Ginshiro_Toyama_Profile.jpg/413px-Ginshiro_Toyama_Profile.jpg"
+  },
+  {
+    name: "Kyogoku Makoto",
+    silhouette: "https://i.pinimg.com/736x/e4/90/aa/e490aae6ec7275fc86bd7aa7078fabf8.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/92/Makoto_Kyogoku_Profile.png/413px-Makoto_Kyogoku_Profile.png"
+  },
+  {
+    name: "Hattori Shizuka",
+    silhouette: "https://i.pinimg.com/736x/53/a6/24/53a624b30984e4948db615ce3a0eb692.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/b5/Shizuka_Hattori_Profile2.png/413px-Shizuka_Hattori_Profile2.png"
+  },
+  {
+    name: "Ooka Momiji",
+    silhouette: "https://i.pinimg.com/736x/f7/64/c7/f764c75a3c24022705d9100c05a8ea80.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/55/Momiji_Ooka_Profile.png/413px-Momiji_Ooka_Profile.png"
+  },
+  {
+    name: "Iori Muga",
+    silhouette: "https://i.pinimg.com/736x/ae/7a/f3/ae7af33405afed75890c72b4e2490048.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/3/3b/Iori_Muga_Profile.png/413px-Iori_Muga_Profile.png"
+  },
+     {
+    name: "Yokomizo Jugo",
+    silhouette: "https://i.pinimg.com/736x/0a/70/fa/0a70fa8887088d10f24087a39c3dc431.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/e/e6/Jugo_Yokomizo_Profile.jpg"
+  },
+   {
+    name: "Yamamura Misao",
+    silhouette: "https://i.pinimg.com/736x/81/f3/41/81f34115ba21dd661004f80619d96bf7.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/e/ea/Misao_Yamamura_Profile.jpg"
+  },
+   {
+    name: "Yamato Kansuke",
+    silhouette: "https://i.pinimg.com/736x/9a/75/91/9a7591536adb48d4733dccba997c2477.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/24/Kansuke_Yamamoto_Profile.jpg/206px-Kansuke_Yamamoto_Profile.jpg"
+  },
+   {
+    name: "Yui Uehara",
+    silhouette: "https://i.pinimg.com/736x/a1/d4/f2/a1d4f2ff3f9b88f9f0bf293034a7869e.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/4/47/Yui_Uehara_Profile.jpg/413px-Yui_Uehara_Profile.jpg"
+  },
+   {
+    name: "Morofushi Taka'aki",
+    silhouette: "https://i.pinimg.com/736x/eb/da/cd/ebdacd8bf4d23aed1a8e71e6b467e703.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/5f/Taka%27aki_Morofushi_Profile.png/413px-Taka%27aki_Morofushi_Profile.png"
+  },
+    {
+    name: "Vermouth",
+    silhouette: "https://i.pinimg.com/1200x/8b/86/71/8b8671124d41c2d5b018d3e70f25e493.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/9a/M26_Vermouth.jpg/413px-M26_Vermouth.jpg"
+  },
+    {
+    name: "Chiba Kazunobu",
+    silhouette: "https://i.pinimg.com/736x/d2/71/58/d271586f6bbd7c0100b8bf3937148dbe.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/6/60/Kazunobu_Chiba_Profile.jpg"
+  },
+  {
+    name: "Miike Naeko",
+    silhouette: "https://i.pinimg.com/736x/98/e7/1f/98e71fc6e96ca85a51e72032763fc27b.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/7/72/Naeko.png/413px-Naeko.png"
+  },
+  {
+    name: "Yumi Miyamoto",
+    silhouette: "https://i.pinimg.com/736x/6a/2b/69/6a2b69825abef59b804bef2ee3ba9494.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/2c/Yumi_Miyamoto_Profile.png/413px-Yumi_Miyamoto_Profile.png"
+  },
+  {
+    name: "Date Wataru",
+    silhouette: "https://i.pinimg.com/736x/e0/3b/53/e03b530daea4fb3b8ac58778f752bb5b.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/d0/Wataru_Date_Profile.jpg/413px-Wataru_Date_Profile.jpg"
+  },
+  {
+    name: "Yokomizo Sango",
+    silhouette: "https://i.pinimg.com/736x/d4/99/33/d49933161a15dfa6bb30622fdaf7e68a.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/8/88/Sango_Yokomizo_Profile.jpg/275px-Sango_Yokomizo_Profile.jpg"
+  },
+
+      {
+    name: "Matsuda Jinpei",
+    silhouette: "https://i.pinimg.com/736x/33/36/f0/3336f021b5e47c5993f4c2929b73d810.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/c/c5/Jinpei_Matsuda_Profile.png/413px-Jinpei_Matsuda_Profile.png"
+  },
+    {
+    name: "Hagiwara Kenji",
+    silhouette: "https://i.pinimg.com/736x/db/ff/98/dbff9835c1015d2b7abf8f5641d77328.jpg",
+    image: "https://i.pinimg.com/736x/1d/a6/45/1da645b48e205f86c879df979656d490.jpg"
+  },
+    {
+    name: "Hagiwara Chihaya",
+    silhouette: "https://i.pinimg.com/736x/e9/61/7b/e9617b70ea0b770173e0d00cc24ae98c.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/3/35/Chihaya_Hagiwara_Profile.jpg/413px-Chihaya_Hagiwara_Profile.jpg"
+  },
+    {
+    name: "Hondou Eisuke",
+    silhouette: "https://i.pinimg.com/736x/d7/39/23/d739232cd58ba2dea461726ac0373a95.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f3/Eisuke_Hondou_Profile.jpg/413px-Eisuke_Hondou_Profile.jpg"
+  },
+    {
+    name: "Kobayashi Sumiko",
+    silhouette: "https://i.pinimg.com/736x/fd/6c/56/fd6c56914f5def3ee38b69c6ff224981.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/b8/Sumiko_Kobayashi_Profile.jpg/413px-Sumiko_Kobayashi_Profile.jpg"
+  },
+    
+     {
+    name: "Subaru Okiya",
+    silhouette: "https://i.pinimg.com/736x/01/34/71/013471bf559f7e9add068f5250b60650.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/c/ce/Subaru_Okiya_Profile.png/413px-Subaru_Okiya_Profile.png"
+  },
+   {
+    name: "Sherry",
+    silhouette: "https://i.pinimg.com/736x/2a/98/c6/2a98c6d23df2fd65382f5940cb4914cd.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/bc/Shiho_Miyano_Profile.jpg/275px-Shiho_Miyano_Profile.jpg"
+  },
+   {
+    name: "Azusa Enomoto",
+    silhouette: "https://i.pinimg.com/736x/63/bc/ec/63bcec836e1c31301566dc7ab05628d1.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/4/4a/Azusa_Enomoto_Profile.png/413px-Azusa_Enomoto_Profile.png"
+  },
+   {
+    name: "Andre Camel",
+    silhouette: "https://i.pinimg.com/736x/e4/a0/5a/e4a05adb4ed272598d44e305d38469c7.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/22/Andre_Camel_Profile.png/413px-Andre_Camel_Profile.png"
+  },
+   {
+    name: "Miyano Akemi",
+    silhouette: "https://i.pinimg.com/736x/53/02/9d/53029da937910359c1fd37d34ef098ad.jpg",
+    image: "https://conanwiki.org/images/7/7d/Akemi_Miyano.png"
+  },
+      {
+    name: "Morofushi Hiromitsu",
+    silhouette: "https://i.pinimg.com/736x/b0/a4/45/b0a445c82a315a96590b4e0e1e1d5238.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/59/Scotch_Profile.jpg/275px-Scotch_Profile.jpg"
+  },
+    
+  {
+    name: "Gin",
+    silhouette: "https://i.pinimg.com/736x/08/4c/31/084c319a1d801e7a51118e4a038d1e0c.jpg",       // ← your silhouette path
+    image: "https://i.pinimg.com/736x/72/83/df/7283df1e4bae0b0e949ed550b1cd29c1.jpg"                    // ← normal image path
+  },
+  {
+    name: "Furuya Rei",
+    silhouette: "https://i.pinimg.com/736x/45/d8/f7/45d8f74d1da6c5688daff4eaf5f9c5de.jpg",
+    image: "https://www.detectiveconanworld.com/wiki/images/8/86/Rei_Furuya_Profile.jpg"
+  },
+  {
+    name: "Akai Shuichi",
+    silhouette: "https://i.pinimg.com/736x/a0/5a/6e/a05a6e7fb788813c46296a1965deb8ce.jpgimages/silhouettes/akai.png",
+    image: "https://i.pinimg.com/736x/a0/5a/6e/a05a6e7fb788813c46296a1965deb8ce.jpg"
+  }
+];
+
+
+    // Deterministic shuffle using seed
+function shuffle(array, seed) {
+  let result = [...array];
+  let rng = seededRandomGenerator(seed);
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+// Seeded random generator function
+function seededRandomGenerator(seed) {
+  return function () {
+    const x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  };
+}
+
+// Calculate how many days since the start
+const now = new Date();
+const startDate = new Date(2024, 0, 1); // 👈 start date (adjust if needed)
+const daysSinceStart = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+
+// Shuffle all characters based on a fixed seed
+const shuffledCharacters = shuffle(characters, 42); // 42 = your fixed master seed
+
+// Loop through in daily order, wrapping after all characters are shown
+const index = daysSinceStart % shuffledCharacters.length;
+const answer = shuffledCharacters[index];
+
+    
+
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const daySeed = Math.floor(midnight.getTime() / (1000 * 60 * 60 * 24));
+
+    
+
+    document.getElementById('silhouetteImage').src = answer.silhouette;
+    function normalize(str) {
+      return str.trim().toLowerCase();
+    }
+    
+  function showSuggestions() {
+  const input = document.getElementById('guessInput');
+  const val = normalize(input.value);
+  const suggestions = document.getElementById('suggestions');
+  suggestions.innerHTML = '';
+
+  if (!val) {
+    suggestions.style.display = 'none';
+    return;
+  }
+
+  const matches = characters.filter(c => normalize(c.name).includes(val));
+  matches.forEach(char => {
+    const div = document.createElement('div');
+    div.className = 'suggestion-item';
+    div.innerHTML = `<img src="${char.image}" alt="${char.name}"><span>${char.name}</span>`;
+    div.onclick = () => {
+      input.value = char.name;
+      suggestions.style.display = 'none';
+    };
+    suggestions.appendChild(div);
+  });
+
+  suggestions.style.display = matches.length ? 'block' : 'none';
+}
+
+    function submitGuess() {
+  const userInput = normalize(document.getElementById("guessInput").value);
+  if (userInput === normalize(answer.name)) {
+    document.getElementById("answerName").textContent = answer.name;
+document.getElementById("answerSection").style.display = "block";
+document.getElementById("silhouetteImage").src = answer.image;
+    document.getElementById("silhouetteImage").classList.remove("silhouette");
+    document.getElementById("result").textContent = "";
+  } else {
+    document.getElementById("result").textContent = "❌ Try again!";
+  }
+}
+
+    function updateCountdown() {
+      const now = new Date();
+      const nextMidnight = new Date();
+      nextMidnight.setHours(24, 0, 0, 0);
+      const diff = nextMidnight - now;
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("timer").textContent = `🕒 Next character in: ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+  </script>
+
+</body>
+</html>

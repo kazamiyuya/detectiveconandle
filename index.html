@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Guess The Detective Conan Character</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #282f7e, #0f132e);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+h1 {
+font-size: 36px;
+color: #ff0000;
+margin-bottom: 10px;
+}
+
+p {
+font-size: 20px;
+color: #ff0000;
+margin-bottom: 20px;
+}
+
+\#timer {
+font-size: 20px;
+color: #ff0000;
+margin-bottom: 30px;
+}
+
+input {
+padding: 12px;
+width: 250px;
+font-size: 16px;
+border: none;
+border-radius: 5px;
+}
+
+button {
+padding: 12px 20px;
+font-size: 16px;
+margin-left: 10px;
+background-color: #ff0000;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background 0.3s;
+}
+
+button\:hover {
+background-color: #ff9500;
+}
+
+table {
+width: 95%;
+max-width: 750px;
+margin: 30px auto;
+border-collapse: collapse;
+border-radius: 8px;
+overflow: hidden;
+}
+
+th, td {
+padding: 12px;
+border: 3px solid #000000;
+text-align: center;
+}
+
+th {
+background-color: #180368;
+}
+
+.green { background-color: #4caf50; }
+.yellow { background-color: #ff9800; }
+.gray { background-color: #555; }
+
+.suggestion-list {
+background-color: #636363;
+border: 1px solid #000000;
+max-height: 200px;
+overflow-y: auto;
+position: absolute;
+left: 50%;
+transform: translateX(-50%);
+width: 300px;
+text-align: left;
+z-index: 1;
+}
+#silhouetteLink {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #ff3333;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  box-shadow: 0 0 8px rgba(255, 51, 51, 0.6);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#silhouetteLink:hover {
+  background-color: #ff6600;
+  transform: scale(1.05);
+}
+
+.suggestion-item {
+padding: 8px;
+cursor: pointer;
+border-bottom: 1px solid #444;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.suggestion-item img {
+width: 30px;
+height: 30px;
+border-radius: 5px;
+}
+
+.suggestion-item\:hover {
+background-color: #444;
+}
+
+#winImage img {
+  width: 300px;
+  margin-top: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px #00e676;
+}
+
+img.character-img {
+width: 80px;
+height: auto;
+border-radius: 6px;
+}
+
+#winMessage {
+  font-size: 32px;
+  font-weight: bold;
+  margin-top: 30px;
+  color: #00e676;
+  display: none;
+} </style>
+
+</head>
+<body>
+
+<img src="https://preview.redd.it/4jocosl815p61.jpg?auto=webp&s=b8d20ca51bb736db30522c697eb2227ffeca67b1"
+ alt="Detective Conan Characters"
+ style="width: 90%; max-width: 800px; border-radius: 12px; margin-bottom: 20px;">
+
+<h1>Guess the Detective Conan Character</h1>
+<a href="silhouette.html" id="silhouetteLink">🕵️ Play Silhouette Game</a>
+<div id="winMessage"></div>
+<div id="winImage"></div>
+<p>Try to guess the Detective Conan character of the day!</p>
+<p id="timer">🕒 Next character in: ...</p>
+
+
+  <div style="position: relative;">
+    <input type="text" id="guessInput" placeholder="Type character name..." oninput="showSuggestions()" autocomplete="off">
+    <div id="suggestions" class="suggestion-list" style="display: none;"></div>
+  </div>
+
+<button onclick="submitGuess()">Guess</button>
+
+<div id="hintContainer" style="margin-top: 20px;">
+  <button id="hintButton" onclick="handleHintClick()">🔍 Show Hint</button>
+  <p id="hintText" style="margin-top: 10px; color: #ffc107;"></p>
+</div>
+
+  <table id="guessesTable">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Age</th>
+        <th>Hair Color</th>
+        <th>Affiliation</th>
+        <th>Arc</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="winMessage"></div>
+  <div id="winImage"></div>
+  <div style="margin-top: 20px;">
+
+  <script>
+    let guessCount = 0;
+    const arcOrder = {
+      "Conan Arc": 1,
+      "Haibara Arc": 2,
+      "Vermouth Arc": 3,
+      "The Boss' Cell Phone Number Arc": 4,
+      "Kir Arc": 5,
+      "Bourbon Arc": 6,
+      "Rum Arc": 7
+    };
+
+    const characters = [
+      {
+    name: "Subaru Okiya",
+    gender: "Male",
+    age: 27,
+    hair_color: "Light Brown",
+    affiliation: "Civilian",
+    episode: 509,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/c/ce/Subaru_Okiya_Profile.png/413px-Subaru_Okiya_Profile.png"
+  },
+      {
+    name: "Takahiro Sanada",
+    gender: "Male",
+    age: 18,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 742,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/6/6e/Takahiro_Sanada_Profile.png/413px-Takahiro_Sanada_Profile.png"
+  },
+      {
+    name: "Sakurako Yonehara",
+    gender: "Female",
+    age: 23,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 652,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/99/Sakurako_Yonehara_Profile.jpg/413px-Sakurako_Yonehara_Profile.jpg"
+  },
+       {
+    name: "Goro Otaki",
+    gender: "Male",
+    age: null,
+    hair_color: "Black",
+    affiliation: "Osaka Police",
+    episode: 118,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/8/8b/Goro_Otaki_Profile.jpg/413px-Goro_Otaki_Profile.jpg"
+  },
+     
+    {
+    name: "Ryusuke Higo",
+    gender: "Male",
+    age: 22,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 279,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/de/Ryusuke_Higo_Profile2.png/413px-Ryusuke_Higo_Profile2.png"
+  },
+    {
+    name: "Yokomizo Sango",
+    gender: "Male",
+    age: 35,
+    hair_color: "Black",
+    affiliation: "Shizuoka Prefecture Police",
+    episode: 9,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/8/88/Sango_Yokomizo_Profile.jpg/275px-Sango_Yokomizo_Profile.jpg"
+  },
+    {
+    name: "Vermouth",
+    gender: "Female",
+    age: null, 
+    hair_color: "Blonde",
+    affiliation: "Black Org",
+    episode: 176,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/9a/M26_Vermouth.jpg/413px-M26_Vermouth.jpg"
+  },
+    {
+    name: "Araide Tomoaki",
+    gender: "Male",
+    age: 25,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 170,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/0/09/Tomoaki_Araide_Profile.png/413px-Tomoaki_Araide_Profile.png"
+  },
+  {
+    name: "Okino Yoko",
+    gender: "Female",
+    age: 22,
+    hair_color: "Light Brown",
+    affiliation: "Civilian",
+    episode: 3,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/bd/Yoko_Okino_Profile.jpg/413px-Yoko_Okino_Profile.jpg"
+  },
+  {
+    name: "Miyano Atsushi",
+    gender: "Male",
+    age: 37,
+    hair_color: "Brown",
+    affiliation: "Black Org",
+    episode: 340,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/0/0a/Atsushi_Miyano_Profile.png/413px-Atsushi_Miyano_Profile.png"
+  },
+    {
+    name: "Miyano Elena",
+    gender: "Female",
+    age: 30,
+    hair_color: "Blonde",
+    affiliation: "Black Org",
+    episode: 329,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/7/77/Elena_Miyano_Profile.png/413px-Elena_Miyano_Profile.png"
+  },
+  {
+    name: "Kuroba Toichi",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "Theif",
+    episode: 219,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/c/c9/Toichi_Kuroba_Profile.jpg/413px-Toichi_Kuroba_Profile.jpg"
+  },
+  {
+    name: "Suzuki Jirokichi",
+    gender: "Male",
+    age: 72,
+    hair_color: "Bald",
+    affiliation: "Civilian",
+    episode: 356,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/0/06/Jirokichi_Suzuki_Profile.png/413px-Jirokichi_Suzuki_Profile.png"
+  },
+  {
+    name: "Azusa Enomoto",
+    gender: "Female",
+    age: 23,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 152,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/4/4a/Azusa_Enomoto_Profile.png/413px-Azusa_Enomoto_Profile.png"
+  },
+    {
+    name: "Sherry",
+    gender: "Female",
+    age: 18,
+    hair_color: "Light Brown",
+    affiliation: "Black Org",
+    episode: 128,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/bc/Shiho_Miyano_Profile.jpg/275px-Shiho_Miyano_Profile.jpg"
+  },
+  {
+    name: "Kudou Shinichi",
+    gender: "Male",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "Detective",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/3/3b/Shinichi_Kudo_Profile.jpg/413px-Shinichi_Kudo_Profile.jpg"
+  },
+  {
+    name: "Jodie Starling",
+    gender: "Female",
+    age: 28,
+    hair_color: "Blonde",
+    affiliation: "FBI",
+    episode: 226,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/5d/Jodie_Starling_Profile.png/413px-Jodie_Starling_Profile.png"
+  },
+  {
+    name: "James Black",
+    gender: "Male",
+    age: null, 
+    hair_color: "Gray",
+    affiliation: "FBI",
+    episode: 258,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/a/a2/James_Black_Profile.png/413px-James_Black_Profile.png"
+  },
+  {
+    name: "Andre Camel",
+    gender: "Male",
+    age: 27,
+    hair_color: "Brown",
+    affiliation: "FBI",
+    episode: 497,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/22/Andre_Camel_Profile.png/413px-Andre_Camel_Profile.png"
+  },
+  {
+    name: "Miyano Akemi",
+    gender: "Female",
+    age: 25,
+    hair_color: "Brown",
+    affiliation: "Black Org",
+    episode: 13,
+    image: "https://conanwiki.org/images/7/7d/Akemi_Miyano.png"
+  },
+
+    {
+    name: "Tequila",
+    gender: "Male",
+    age: null, 
+    hair_color: "Brown",
+    affiliation: "Black Org",
+    episode: 54,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/0/00/Tequila_Profile.jpg/413px-Tequila_Profile.jpg"
+  },
+  {
+    name: "Date Wataru",
+    gender: "Male",
+    age: 28,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 681,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/d0/Wataru_Date_Profile.jpg/413px-Wataru_Date_Profile.jpg"
+  },
+  {
+    name: "Matsuda Jinpei",
+    gender: "Male",
+    age: 26,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 301,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/c/c5/Jinpei_Matsuda_Profile.png/413px-Jinpei_Matsuda_Profile.png"
+  },
+  {
+    name: "Hagiwara Kenji",
+    gender: "Male",
+    age: 22,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 304,
+    image: "https://i.pinimg.com/736x/1d/a6/45/1da645b48e205f86c879df979656d490.jpg"
+  },
+  {
+    name: "Hagiwara Chihaya",
+    gender: "Female",
+    age: 31,
+    hair_color: "Light Brown",
+    affiliation: "Kanagawa Prefecture Police",
+    episode: 1089,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/3/35/Chihaya_Hagiwara_Profile.jpg/413px-Chihaya_Hagiwara_Profile.jpg"
+  },
+  {
+    name: "Yokomizo Jugo",
+    gender: "Male",
+    age: 35,
+    hair_color: "Black",
+    affiliation: "Kanagawa Prefecture Police",
+    episode: 284,
+    image: "https://www.detectiveconanworld.com/wiki/images/e/e6/Jugo_Yokomizo_Profile.jpg"
+  },
+  {
+    name: "Agasa Hiroshi",
+    gender: "Male",
+    age: 53,
+    hair_color: "Gray",
+    affiliation: "Civilian",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/d5/Hiroshi_Agasa_Profile.jpg/413px-Hiroshi_Agasa_Profile.jpg"
+  },
+  {
+    name: "Fusae Campbell",
+    gender: "Female",
+    age: 50,
+    hair_color: "Blonde",
+    affiliation: "Civilian",
+    episode: 421,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/0/08/Fusae_Campbell_profile.png/413px-Fusae_Campbell_profile.png"
+  },
+  {
+    name: "Hondou Eisuke",
+    gender: "Male",
+    age: 17,
+    hair_color: "Black",
+    affiliation: "High School Student",
+    episode: 429,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f3/Eisuke_Hondou_Profile.jpg/413px-Eisuke_Hondou_Profile.jpg"
+  },
+  {
+    name: "Hondou Ethan",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "CIA",
+    episode: 485,
+    image: "https://www.detectiveconanworld.com/wiki/images/b/b2/Ethan_Hondou_Profile.jpg"
+  },
+  {
+    name: "Kobayashi Sumiko",
+    gender: "Female",
+    age: 26,
+    hair_color: "Black",
+    affiliation: "Civilian",
+    episode: 112,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/b8/Sumiko_Kobayashi_Profile.jpg/413px-Sumiko_Kobayashi_Profile.jpg"
+  },
+    {
+    name: "Yamamura Misao",
+    gender: "Male",
+    age: null, 
+    hair_color: "Brown",
+    affiliation: "Gunma Police",
+    episode: 96,
+    image: "https://www.detectiveconanworld.com/wiki/images/e/ea/Misao_Yamamura_Profile.jpg"
+  },
+  {
+    name: "Takagi Wataru",
+    gender: "Male",
+    age: 26,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 21,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/be/Wataru_Takagi_Profile2.png/413px-Wataru_Takagi_Profile2.png"
+  },
+  {
+    name: "Shiratori Ninzaburo",
+    gender: "Male",
+    age: 28,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 146,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/5e/Ninzaburo_Shiratori_Profile.png/413px-Ninzaburo_Shiratori_Profile.png"
+  },
+  {
+    name: "Chiba Kazunobu",
+    gender: "Male",
+    age: 24,
+    hair_color: "Brown",
+    affiliation: "Tokyo Police",
+    episode: 138,
+    image: "https://www.detectiveconanworld.com/wiki/images/6/60/Kazunobu_Chiba_Profile.jpg"
+  },
+  {
+    name: "Miike Naeko",
+    gender: "Female",
+    age: 24,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 624,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/7/72/Naeko.png/413px-Naeko.png"
+  },
+  {
+    name: "Yumi Miyamoto",
+    gender: "Female",
+    age: 28,
+    hair_color: "Brown",
+    affiliation: "Tokyo Police",
+    episode: 146,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/2c/Yumi_Miyamoto_Profile.png/413px-Yumi_Miyamoto_Profile.png"
+  },
+  {
+    name: "Megure Juzo",
+    gender: "Male",
+    age: 41,
+    hair_color: "Black",
+    affiliation: "Tokyo Police",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/6/66/Juzo_Megure_Profile2.png/275px-Juzo_Megure_Profile2.png"
+  },
+  {
+    name: "Okita Soshi",
+    gender: "Male",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "High School Student",
+    episode: 263,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/2c/Soshi_Okita_Profile.png/413px-Soshi_Okita_Profile.png"
+  },
+  {
+    name: "Yamato Kansuke",
+    gender: "Male",
+    age: 35,
+    hair_color: "Black",
+    affiliation: "Nagano Police",
+    episode: 516,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/24/Kansuke_Yamamoto_Profile.jpg/206px-Kansuke_Yamamoto_Profile.jpg"
+  },
+  {
+    name: "Yui Uehara",
+    gender: "Female",
+    age: 29,
+    hair_color: "Dark Brown",
+    affiliation: "Nagano Police",
+    episode: 516,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/4/47/Yui_Uehara_Profile.jpg/413px-Yui_Uehara_Profile.jpg"
+  },
+  {
+    name: "Morofushi Taka'aki",
+    gender: "Male",
+    age: 35,
+    hair_color: "Black",
+    affiliation: "Nagano Police",
+    episode: 558,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/5f/Taka%27aki_Morofushi_Profile.png/413px-Taka%27aki_Morofushi_Profile.png"
+  },
+  {
+    name: "Toyama Ginshiro",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "Osaka Police",
+    episode: 118,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/da/Ginshiro_Toyama_Profile.jpg/413px-Ginshiro_Toyama_Profile.jpg"
+  },
+  {
+
+    name: "Kaito Kid",
+    gender: "Male",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "Thief",
+    episode: 76,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/d1/Kaitou_Kid_Profile.png/275px-Kaitou_Kid_Profile.png"
+  },
+  {
+    name: "Hakuba Saguru",
+    gender: "Male",
+    age: null, 
+    hair_color: "Blonde",
+    affiliation: "Detective",
+    episode: 219,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/df/Saguru_Hakuba_Profile.jpg/413px-Saguru_Hakuba_Profile.jpg"
+  },
+  {
+    name: "Suzuki Sonoko",
+    gender: "Female",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "High School Student",
+    episode: 6,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/95/Sonoko_Suzuki_Profile.jpg/413px-Sonoko_Suzuki_Profile.jpg"
+  },
+  {
+    name: "Kyogoku Makoto",
+    gender: "Male",
+    age: 18,
+    hair_color: "Black",
+    affiliation: "High School Student",
+    episode: 153,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/92/Makoto_Kyogoku_Profile.png/413px-Makoto_Kyogoku_Profile.png"
+  },
+  {
+    name: "Hattori Heizo",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "Osaka Police",
+    episode: 48,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/8/8a/Heizo_Hattori_Profile.jpg/413px-Heizo_Hattori_Profile.jpg"
+  },
+  {
+    name: "Hattori Shizuka",
+    gender: "Female",
+    age: 42,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 220,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/b/b5/Shizuka_Hattori_Profile2.png/413px-Shizuka_Hattori_Profile2.png"
+  },
+  {
+    name: "Chianti",
+    gender: "Female",
+    age: null, 
+    hair_color: "Orange",
+    affiliation: "Black Org",
+    episode: 425,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/a/af/Chianti_Profile.jpg/413px-Chianti_Profile.jpg"
+  },
+  {
+    name: "Korn",
+    gender: "Male",
+    age: null, 
+    hair_color: "Gray",
+    affiliation: "Black Org",
+    episode: 425,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/2b/Korn_Profile.jpg/413px-Korn_Profile.jpg"
+  },
+  {
+    name: "Hattori Heiji",
+    gender: "Male",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "Detective",
+    episode: 48,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/2c/Heiji_Hattori_Profile.png/413px-Heiji_Hattori_Profile.png"
+  },
+  {
+    name: "Toyama Kazuha",
+    gender: "Female",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "High School Student",
+    episode: 118,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/7/77/Kazuha_Toyama_Profile.jpg/413px-Kazuha_Toyama_Profile.jpg"
+  },
+  {
+    name: "Ooka Momiji",
+    age: 17,
+    gender: "Female",
+    hair_color: "Light Brown",
+    affiliation: "High School Student",
+    episode: 874,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/55/Momiji_Ooka_Profile.png/413px-Momiji_Ooka_Profile.png"
+  },
+  {
+    name: "Iori Muga",
+    gender: "Male",
+    age: 30,
+    hair_color: "Black",
+    affiliation: "PSB",
+    episode: 885,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/3/3b/Iori_Muga_Profile.png/413px-Iori_Muga_Profile.png"
+  },
+  {
+    name: "Kurada Hyoue",
+    gender: "Male",
+    age: 50,
+    hair_color: "Gray",
+    affiliation: "PSB",
+    episode: 810,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/91/Hyoue_Kuroda_Profile.png/413px-Hyoue_Kuroda_Profile.png"
+  },
+  {
+    name: "Kazami Yuuya",
+    gender: "Male",
+    age: 30,
+    hair_color: "Black",
+    affiliation: "PSB",
+    episode: 926,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/9/90/Yuya_Kazami_Profile2.png/413px-Yuya_Kazami_Profile2.png"
+  },
+  {
+    name: "Yoshida Ayumi",
+    gender: "Female",
+    age: 7,
+    hair_color: "Brown",
+    affiliation: "Detective Boys",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/7/74/Ayumi_Yoshida_Profile.jpg/413px-Ayumi_Yoshida_Profile.jpg"
+  },
+  {
+    name: "Kojima Genta",
+    gender: "Male",
+    age: 7,
+    hair_color: "Black",
+    affiliation: "Detective Boys",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/a/a9/Genta_Kojima_Profile2.jpg/413px-Genta_Kojima_Profile2.jpg"
+  },
+  {
+    name: "Tsuburaya Mitsuhiko",
+    gender: "Male",
+    age: 7,
+    hair_color: "Brown",
+    affiliation: "Detective Boys",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/7/7e/Mitsuhiko_Tsuburaya_Profile.jpg/413px-Mitsuhiko_Tsuburaya_Profile.jpg"
+  },
+  {
+    name: "Mouri Kogoro",
+    gender: "Male",
+    age: 38,
+    hair_color: "Black",
+    affiliation: "Detective",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/21/Kogoro_EP1100.jpg/413px-Kogoro_EP1100.jpg"
+  },
+  {
+    name: "Kisaki Eri",
+    gender: "Female",
+    age: 38,
+    hair_color: "Light Brown",
+    affiliation: "Civilian",
+    episode: 32,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f3/Eri_Kisaki_Profile.png/413px-Eri_Kisaki_Profile.png"
+  },
+  {
+    name: "Kudo Yukiko",
+    gender: "Female",
+    age: 37,
+    hair_color: "Light Brown",
+    affiliation: "Civilian",
+    episode: 43,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f9/Yukiko_Kudo_Profile.png/413px-Yukiko_Kudo_Profile.png"
+  },
+  {
+    name: "Kudo Yusaku",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "Civilian",
+    episode: 43,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/d/d4/Yusaku_Kudo_Profile.png/413px-Yusaku_Kudo_Profile.png"
+  },
+  {
+    name: "Akai Shuichi",
+    gender: "Male",
+    age: 32,
+    hair_color: "Black",
+    affiliation: "FBI",
+    episode: 230,
+    image: "https://i.pinimg.com/736x/a0/5a/6e/a05a6e7fb788813c46296a1965deb8ce.jpg"
+  },
+  {
+    name: "Furuya Rei",
+    gender: "Male",
+    age: 29,
+    hair_color: "Blonde",
+    affiliation: "PSB",
+    episode: 667,
+    image: "https://www.detectiveconanworld.com/wiki/images/8/86/Rei_Furuya_Profile.jpg"
+  },
+  {
+    name: "Morofushi Hiromitsu",
+    gender: "Male",
+    age: 26,
+    hair_color: "Brown",
+    affiliation: "PSB",
+    episode: 836,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/5/59/Scotch_Profile.jpg/275px-Scotch_Profile.jpg"
+  },
+  {
+    name: "Haibara Ai",
+    gender: "Female",
+    age: 7,
+    hair_color: "Light Brown",
+    affiliation: "Detective Boys",
+    episode: 129,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/4/4f/Ai_Haibara_Profile.png/413px-Ai_Haibara_Profile.png"
+  },
+  {
+    name: "Mouri Ran",
+    gender: "Female",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "High School Student",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/3/39/Mouri_Ran_FBS.jpg/356px-Mouri_Ran_FBS.jpg"
+  },
+  {
+    name: "Gin",
+    gender: "Male",
+    age: null, 
+    hair_color: "Silver",
+    affiliation: "Black Org",
+    episode: 1,
+    image: "https://i.pinimg.com/736x/72/83/df/7283df1e4bae0b0e949ed550b1cd29c1.jpg"
+  },
+  {
+    name: "Rum",
+    gender: "Male",
+    age: 67,
+    hair_color: "Bald",
+    affiliation: "Black Org",
+    episode: 502,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/6/66/Rum_face.png/413px-Rum_face.png"
+  },
+  {
+    name: "Kir",
+    gender: "Female",
+    age: 27,
+    hair_color: "Brown",
+    affiliation: "CIA",
+    episode: 425,
+    image: "https://i.pinimg.com/736x/15/65/9f/15659f3d93be9d91e3a11cc0af9e0656.jpg"
+  },
+  {
+    name: "Vodka",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "Black Org",
+    episode: 1,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/2/22/Vodka_Profile.jpg/275px-Vodka_Profile.jpg"
+  },
+  {
+    name: "Wakasa Rumi",
+    gender: "Female",
+    age: 37,
+    hair_color: "Black",
+    affiliation: "Civilian",
+    episode: 889,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/a/ad/Rumi_Wakasa_Profile.png/413px-Rumi_Wakasa_Profile.png"
+  },
+  {
+    name: "Akai Tsutomu",
+    gender: "Male",
+    age: null, 
+    hair_color: "Black",
+    affiliation: "MI6",
+    episode: 881,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/0/0e/Tsutomu_Akai_Profile.jpg/275px-Tsutomu_Akai_Profile.jpg"
+  },
+  {
+    name: "Mary Sera",
+    gender: "Female",
+    age: 53,
+    hair_color: "Blonde",
+    affiliation: "MI6",
+    episode: 756,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/f/f4/Mary_Sera_Profile.jpg/275px-Mary_Sera_Profile.jpg"
+  },
+  {
+    name: "Masumi Sera",
+    gender: "Female",
+    age: 17,
+    hair_color: "Brown",
+    affiliation: "Detective",
+    episode: 646,
+    image: "https://www.detectiveconanworld.com/wiki/images/thumb/8/84/Masumi_Sera_Profile.jpg/275px-Masumi_Sera_Profile.jpg"
+  },
+  {
+    name: "Sato Miwako",
+    gender: "Female",
+    age: 28,
+    hair_color: "Brown",
+    affiliation: "Tokyo Police",
+    episode: 130,
+    image: "https://i.pinimg.com/736x/5e/b6/f3/5eb6f31e05c61a3b702ccc0f20c15b1c.jpg"
+  },
+  {
+    name: "Haneda Shukichi",
+    gender: "Male",
+    age: 28,
+    hair_color: "Brown",
+    affiliation: "Civilian",
+    episode: 731,
+    image: "https://i.namu.wiki/i/dtbvYg879d_8HjSTjX7uN2mGbHkXb4wmfw_jfnb07lRRDoHxdzu8yTeNAqAre9fMbRf2KOzmmEfkEqFMDVWdhQ.webp"
+  },
+  {
+    name: "Edogawa Conan",
+    gender: "Male",
+    age: 7,
+    hair_color: "Brown",
+    affiliation: "Detective Boys",
+    episode: 1,
+    image: "https://animetv-jp.net/wp-content/uploads/2024/11/GcYI97HbMAAyjfw-696x482.jpeg"
+  }
+
+
+    ];
+
+    function getArcByEpisode(ep) {
+      if (ep <= 128) return "Conan Arc";
+      if (ep <= 178) return "Haibara Arc";
+      if (ep <= 347) return "Vermouth Arc";
+      if (ep <= 424) return "The Boss' Cell Phone Number Arc";
+      if (ep <= 508) return "Kir Arc";
+      if (ep <= 784) return "Bourbon Arc";
+      return "Rum Arc";
+    }
+
+    function seededRandom(seed) {
+    let x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+
+  const now = new Date();
+  const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const daySeed = Math.floor(midnightToday.getTime() / (1000 * 60 * 60 * 24));
+function shuffleArray(array, seed) {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+const shuffledCharacters = shuffleArray(characters, daySeed);
+const dayIndex = daySeed % shuffledCharacters.length;
+const answer = shuffledCharacters[dayIndex];
+
+  const answerArc = getArcByEpisode(answer.episode);
+
+    function normalize(str) {
+      return str.trim().toLowerCase();
+    }
+
+    function showSuggestions() {
+      const input = document.getElementById('guessInput');
+      const val = normalize(input.value);
+      const suggestions = document.getElementById('suggestions');
+      suggestions.innerHTML = '';
+
+      const matches = characters.filter(c => normalize(c.name).includes(val));
+      matches.forEach(char => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.innerHTML = `<img src="${char.image}" alt="${char.name}"><span>${char.name}</span>`;
+        div.onclick = () => {
+          input.value = char.name;
+          suggestions.style.display = 'none';
+        };
+        suggestions.appendChild(div);
+      });
+
+      suggestions.style.display = matches.length ? 'block' : 'none';
+    }
+
+    function submitGuess() {
+      const guessName = document.getElementById('guessInput').value.trim();
+      const guess = characters.find(c => normalize(c.name) === normalize(guessName));
+      if (!guess) return alert("Character not found!");
+
+      const guessArc = getArcByEpisode(guess.episode);
+      const tbody = document.querySelector('#guessesTable tbody');
+      const row = document.createElement('tr');
+
+      const imgTd = document.createElement('td');
+      const img = document.createElement('img');
+      img.src = guess.image;
+      img.onerror = () => {
+        img.src = "https://via.placeholder.com/80?text=No+Image";
+      };
+      img.className = 'character-img';
+      imgTd.appendChild(img);
+      row.appendChild(imgTd);
+
+      function traitCell(value, correct) {
+        const td = document.createElement('td');
+        td.textContent = value;
+        if (normalize(value) === normalize(correct)) td.className = 'green';
+        else td.className = 'gray';
+        return td;
+      }
+     function ageCell(guessAge, correctAge) {
+  const td = document.createElement('td');
+
+  if (guessAge == null && correctAge == null) {
+    td.className = 'green';
+    td.textContent = '?';
+  } else if (guessAge == null && correctAge != null) {
+    td.className = 'gray';
+    td.textContent = '?';
+  } else if (guessAge != null && correctAge == null) {
+    td.className = 'gray';
+    td.textContent = guessAge;
+  } else if (guessAge === correctAge) {
+    td.className = 'green';
+    td.textContent = guessAge;
+  } else if (guessAge < correctAge) {
+    td.className = 'yellow';
+    td.textContent = guessAge + " ↑";
+  } else {
+    td.className = 'yellow';
+    td.textContent = guessAge + " ↓";
+  }
+
+  return td;
+}
+
+      function arcCell(guessArc, correctArc) {
+        const td = document.createElement('td');
+        const guessNum = arcOrder[guessArc];
+        const correctNum = arcOrder[correctArc];
+
+        if (guessNum === correctNum) {
+          td.className = 'green';
+          td.textContent = guessArc;
+        } else if (guessNum < correctNum) {
+          td.className = 'yellow';
+          td.textContent = guessArc + " ↑";
+        } else {
+          td.className = 'yellow';
+          td.textContent = guessArc + "↓";
+        }
+        return td;
+
+      
+      }
+
+      row.appendChild(traitCell(guess.name, answer.name));
+      row.appendChild(traitCell(guess.gender, answer.gender));
+      row.appendChild(ageCell(guess.age, answer.age));
+      row.appendChild(traitCell(guess.hair_color, answer.hair_color));
+      row.appendChild(traitCell(guess.affiliation, answer.affiliation));
+      row.appendChild(arcCell(guessArc, answerArc));
+
+      tbody.prepend(row);
+      document.getElementById('guessInput').value = '';
+      guessCount++;
+
+if (guessCount === 5) {
+  document.getElementById("hintButton").disabled = false;
+}
+
+if (normalize(guess.name) === normalize(answer.name)) {
+  document.getElementById('winMessage').innerHTML = `✅ Correct! The answer is ${answer.name}!`;
+  document.getElementById('winMessage').style.display = 'block';
+  document.getElementById('winImage').innerHTML = `<img src="${answer.image}" alt="${answer.name}">`;
+}
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0);
+      const diff = midnight - now;
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("timer").textContent =
+        `🕒 Next character in: ${hours}h ${minutes}m ${seconds}s`;
+    }
+    function handleHintClick() {
+  if (guessCount < 5) {
+    document.getElementById("hintText").textContent = "❌ You need 5 incorrect guesses before unlocking the hint!";
+    return;
+  }
+
+  const hint = `📺 Hint: First appeared in Episode ${answer.episode}`;
+  document.getElementById("hintText").textContent = hint;
+}
+
+    setInterval(updateCountdown, 1000);
+  </script>
+
+</body>
+</html>
